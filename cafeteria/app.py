@@ -11,9 +11,11 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Cafetería")
-        self.geometry("1400x800")
-        self.configure(fg_color="#111111")
+        self.title("Cafetería Premium")
+        self.geometry("1600x900")
+        self.configure(
+            fg_color="#0F0F0F"
+        )
 
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("dark-blue")

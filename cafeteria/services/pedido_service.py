@@ -11,7 +11,9 @@ def crear_pedido(productos):
 
     session = get_session()
 
-    pedido = Pedido()
+    pedido = Pedido(
+        estado="pendiente"
+    )
 
     total = 0
 

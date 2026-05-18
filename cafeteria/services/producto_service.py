@@ -12,6 +12,12 @@ def crear_producto(
     stock
 ):
 
+    if precio <= 0:
+
+        raise ValueError(
+            "El precio debe ser mayor a 0"
+        )
+
     producto = ProductoFactory.crear_producto(
         nombre,
         categoria,

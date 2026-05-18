@@ -22,17 +22,29 @@ class CocinaView(ctk.CTkFrame):
         self.logout_callback = logout_callback
 
         self.configure(
-            fg_color="#111111"
+            fg_color="#0F0F0F"
         )
 
         self.topbar = ctk.CTkFrame(
             self,
-            fg_color="#1b1b1b",
+            fg_color="#141414",
             height=80
         )
 
         self.topbar.pack(
             fill="x"
+        )
+
+        self.title = ctk.CTkLabel(
+            self.topbar,
+            text="☕ Cocina",
+            font=("Montserrat", 28, "bold")
+        )
+
+        self.title.pack(
+            side="left",
+            padx=20,
+            pady=20
         )
 
         self.logout_btn = ctk.CTkButton(
@@ -51,7 +63,7 @@ class CocinaView(ctk.CTkFrame):
 
         self.scroll = ctk.CTkScrollableFrame(
             self,
-            fg_color="#111111"
+            fg_color="#0F0F0F"
         )
 
         self.scroll.pack(
@@ -70,10 +82,19 @@ class CocinaView(ctk.CTkFrame):
 
         for pedido in pedidos:
 
+            if pedido.estado == "pendiente":
+                color_estado = "#C67C3E"
+
+            elif pedido.estado == "en_preparacion":
+                color_estado = "#3498DB"
+
+            else:
+                color_estado = "#4CAF50"
+
             card = ctk.CTkFrame(
                 self.scroll,
-                fg_color="#1b1b1b",
-                corner_radius=20
+                fg_color="#1A1A1A",
+                corner_radius=25
             )
 
             card.pack(
@@ -95,8 +116,8 @@ class CocinaView(ctk.CTkFrame):
 
             titulo = ctk.CTkLabel(
                 top,
-                text=f"Pedido #{pedido.id}",
-                font=("Arial", 25, "bold")
+                text=f"☕ Pedido #{pedido.id}",
+                font=("Montserrat", 24, "bold")
             )
 
             titulo.pack(
@@ -116,53 +137,100 @@ class CocinaView(ctk.CTkFrame):
                 side="right"
             )
 
-            estado = ctk.CTkLabel(
+            badge = ctk.CTkFrame(
                 card,
-                text=f"Estado: {pedido.estado}",
-                text_color="#C67C3E"
+                fg_color=color_estado,
+                corner_radius=30,
+                height=35
             )
 
-            estado.pack(
-                anchor="w",
-                padx=20
-            )
-
-            for detalle in pedido.detalles:
-
-                producto = detalle.producto.nombre
-
-                detalle_label = ctk.CTkLabel(
-                    card,
-                    text=f"- {producto} x{detalle.cantidad}"
-                )
-
-                detalle_label.pack(
-                    anchor="w",
-                    padx=40
-                )
-
-            total = ctk.CTkLabel(
-                card,
-                text=f"Total: ${pedido.total}",
-                font=("Arial", 18, "bold")
-            )
-
-            total.pack(
+            badge.pack(
                 anchor="w",
                 padx=20,
                 pady=10
             )
 
-            boton = ctk.CTkButton(
-                card,
-                text="Marcar Listo",
-                command=lambda p=pedido: self.marcar_listo(p.id)
+            badge_label = ctk.CTkLabel(
+                badge,
+                text=pedido.estado.upper(),
+                font=("Montserrat", 14, "bold")
             )
 
-            boton.pack(
-                padx=20,
-                pady=20
+            badge_label.pack(
+                padx=15,
+                pady=5
             )
+
+            for detalle in pedido.detalles:
+
+                nombre_producto = "Producto eliminado"
+
+                if detalle.producto:
+                    nombre_producto = detalle.producto.nombre
+
+                detalle_label = ctk.CTkLabel(
+                    card,
+                    text=f"• {nombre_producto} x{detalle.cantidad}",
+                    font=("Montserrat", 16)
+                )
+
+                detalle_label.pack(
+                    anchor="w",
+                    padx=35,
+                    pady=2
+                )
+
+            total = ctk.CTkLabel(
+                card,
+                text=f"Total: ${pedido.total}",
+                font=("Montserrat", 18, "bold"),
+                text_color="#C67C3E"
+            )
+
+            total.pack(
+                anchor="w",
+                padx=20,
+                pady=15
+            )
+
+            if pedido.estado == "pendiente":
+
+                boton = ctk.CTkButton(
+                    card,
+                    text="Iniciar Preparación",
+                    fg_color="#3498DB",
+                    hover_color="#2874A6",
+                    command=lambda p=pedido: self.iniciar_preparacion(p.id)
+                )
+
+                boton.pack(
+                    padx=20,
+                    pady=15
+                )
+
+            elif pedido.estado == "En preparacion":
+
+                boton = ctk.CTkButton(
+                    card,
+                    text="Marcar Listo",
+                    fg_color="#4CAF50",
+                    hover_color="#388E3C",
+                    command=lambda p=pedido: self.marcar_listo(p.id)
+                )
+
+                boton.pack(
+                    padx=20,
+                    pady=15
+                )
+
+    def iniciar_preparacion(self, pedido_id):
+
+        cambiar_estado_pedido(
+            pedido_id,
+            "en_preparacion"
+        )
+
+        self.cargar_pedidos()
 
     def marcar_listo(self, pedido_id):
 
@@ -205,8 +273,6 @@ class CocinaView(ctk.CTkFrame):
         if not confirmacion:
             return
 
-        eliminar_pedido(
-            pedido_id
-        )
+        eliminar_pedido(pedido_id)
 
         self.cargar_pedidos()
