@@ -170,7 +170,7 @@ class CocinaView(ctk.CTkFrame):
                     justify="left",
                     font=("Montserrat", 16)
                 )
-
+                
                 detalle_label.pack(
                     anchor="w",
                     padx=40,
