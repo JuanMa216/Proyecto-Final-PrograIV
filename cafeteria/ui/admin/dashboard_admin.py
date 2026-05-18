@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 from ui.admin.productos_view import ProductosView
 from ui.admin.empleados_view import EmpleadosView
+from ui.admin.extras_view import ExtrasView
 
 from services.producto_service import obtener_productos
 from services.pedido_service import obtener_pedidos
@@ -102,6 +103,18 @@ class DashboardAdmin(ctk.CTkFrame):
         )
 
         self.empleados_btn.pack(
+            fill="x",
+            padx=20,
+            pady=10
+        )
+
+        self.extras_btn = ctk.CTkButton(
+            self.sidebar,
+            text="Extras",
+            command=self.show_extras
+        )
+
+        self.extras_btn.pack(
             fill="x",
             padx=20,
             pady=10
@@ -249,6 +262,17 @@ class DashboardAdmin(ctk.CTkFrame):
         EmpleadosView(
             self.content,
             self.usuario
+        ).pack(
+            fill="both",
+            expand=True
+        )
+
+    def show_extras(self):
+
+        self.clear_content()
+
+        ExtrasView(
+            self.content
         ).pack(
             fill="both",
             expand=True

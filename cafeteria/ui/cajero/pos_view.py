@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
-from services.producto_service import obtener_productos
+from services.producto_service import obtener_productos, obtener_extras
 from services.pedido_service import crear_pedido
 
 from utils.image_loader import (
@@ -207,15 +207,252 @@ class POSView(ctk.CTkFrame):
 
     def agregar_producto(self, producto):
 
-        if producto.id in self.carrito:
+        self.mostrar_selector_extras(producto)
 
-            self.carrito[producto.id]["cantidad"] += 1
+    def mostrar_selector_extras(self, producto):
+
+        dialog = ctk.CTkToplevel(self)
+        dialog.title(f"Agregar: {producto.nombre}")
+        dialog.geometry("400x500")
+        dialog.configure(fg_color="#111111")
+        dialog.resizable(False, False)
+
+        dialog.transient(self)
+        dialog.update_idletasks()
+        dialog.grab_set()
+
+        main_frame = ctk.CTkScrollableFrame(
+            dialog,
+            fg_color="#111111"
+        )
+
+        main_frame.pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=20
+        )
+
+        nombre = ctk.CTkLabel(
+            main_frame,
+            text=producto.nombre,
+            font=("Arial", 24, "bold")
+        )
+
+        nombre.pack(pady=(0, 5))
+
+        precio_base = ctk.CTkLabel(
+            main_frame,
+            text=f"${producto.precio}",
+            text_color="#C67C3E",
+            font=("Arial", 20, "bold")
+        )
+
+        precio_base.pack(pady=(0, 15))
+
+        cant_frame = ctk.CTkFrame(
+            main_frame,
+            fg_color="transparent"
+        )
+
+        cant_frame.pack(pady=10)
+
+        cant_label = ctk.CTkLabel(
+            cant_frame,
+            text="Cantidad:",
+            font=("Arial", 16)
+        )
+
+        cant_label.pack(side="left", padx=(0, 10))
+
+        cantidad_var = ctk.IntVar(value=1)
+
+        cant_spin = ctk.CTkEntry(
+            cant_frame,
+            textvariable=cantidad_var,
+            width=60,
+            height=35,
+            justify="center"
+        )
+
+        cant_spin.pack(side="left")
+
+        extras_label = ctk.CTkLabel(
+            main_frame,
+            text="Extras:",
+            font=("Arial", 18, "bold")
+        )
+
+        extras_label.pack(
+            anchor="w",
+            pady=(20, 10)
+        )
+
+        extras_vars = []
+
+        extras = obtener_extras()
+
+        if not extras:
+
+            sin_extras = ctk.CTkLabel(
+                main_frame,
+                text="No hay extras disponibles",
+                text_color="gray"
+            )
+
+            sin_extras.pack(anchor="w")
+
+        for extra in extras:
+
+            frame = ctk.CTkFrame(
+                main_frame,
+                fg_color="#1b1b1b",
+                corner_radius=10,
+                height=45
+            )
+
+            frame.pack(
+                fill="x",
+                pady=4
+            )
+
+            frame.pack_propagate(False)
+
+            var = ctk.BooleanVar(value=False)
+
+            extras_vars.append({
+                "var": var,
+                "extra": extra
+            })
+
+            check = ctk.CTkCheckBox(
+                frame,
+                text=f"{extra.nombre}  (${extra.precio})",
+                variable=var,
+                font=("Arial", 15),
+                fg_color="#C67C3E",
+                hover_color="#A8642D"
+            )
+
+            check.pack(
+                side="left",
+                padx=10
+            )
+
+        total_var = ctk.StringVar(value=f"Total: ${producto.precio}")
+
+        total_label = ctk.CTkLabel(
+            main_frame,
+            textvariable=total_var,
+            font=("Arial", 22, "bold"),
+            text_color="#C67C3E"
+        )
+
+        total_label.pack(pady=(20, 15))
+
+        def actualizar_total():
+
+            extra_total = sum(
+                ev["extra"].precio for ev in extras_vars
+                if ev["var"].get()
+            )
+
+            total = (producto.precio + extra_total) * cantidad_var.get()
+
+            total_var.set(f"Total: ${total}")
+
+        for ev in extras_vars:
+
+            ev["var"].trace_add(
+                "write",
+                lambda *_: actualizar_total()
+            )
+
+        cantidad_var.trace_add(
+            "write",
+            lambda *_: actualizar_total()
+        )
+
+        def confirmar():
+
+            try:
+
+                cantidad = cantidad_var.get()
+
+                if cantidad < 1:
+
+                    messagebox.showerror(
+                        "Error",
+                        "La cantidad debe ser mayor a 0"
+                    )
+
+                    return
+
+                seleccionados = [
+                    {
+                        "nombre": ev["extra"].nombre,
+                        "precio": ev["extra"].precio
+                    }
+                    for ev in extras_vars if ev["var"].get()
+                ]
+
+                self.agregar_al_carrito(
+                    producto,
+                    cantidad,
+                    seleccionados
+                )
+
+                dialog.destroy()
+
+            except ValueError:
+
+                messagebox.showerror(
+                    "Error",
+                    "Cantidad inválida"
+                )
+
+        btn_frame = ctk.CTkFrame(
+            dialog,
+            fg_color="#111111"
+        )
+
+        btn_frame.pack(
+            fill="x",
+            padx=20,
+            pady=(0, 20)
+        )
+
+        confirmar_btn = ctk.CTkButton(
+            btn_frame,
+            text="Agregar al Pedido",
+            fg_color="#C67C3E",
+            hover_color="#A8642D",
+            height=45,
+            font=("Arial", 16, "bold"),
+            command=confirmar
+        )
+
+        confirmar_btn.pack(fill="x")
+
+    def agregar_al_carrito(
+        self,
+        producto,
+        cantidad,
+        extras
+    ):
+
+        key = (producto.id, tuple(e["nombre"] for e in extras))
+
+        if key in self.carrito:
+
+            self.carrito[key]["cantidad"] += cantidad
 
         else:
 
-            self.carrito[producto.id] = {
+            self.carrito[key] = {
                 "producto": producto,
-                "cantidad": 1
+                "cantidad": cantidad,
+                "extras": extras
             }
 
         self.actualizar_pedido()
@@ -230,13 +467,23 @@ class POSView(ctk.CTkFrame):
 
             producto = item["producto"]
             cantidad = item["cantidad"]
+            extras = item.get("extras", [])
 
-            subtotal = producto.precio * cantidad
+            extra_total = sum(e["precio"] for e in extras)
 
-            self.lista.insert(
-                "end",
-                f"{producto.nombre} x{cantidad} - ${subtotal}\n\n"
-            )
+            precio_unitario = producto.precio + extra_total
+
+            subtotal = precio_unitario * cantidad
+
+            texto = f"{producto.nombre} x{cantidad} - ${subtotal}\n"
+
+            for extra in extras:
+
+                texto += f"   +{extra['nombre']} ${extra['precio']}\n"
+
+            texto += "\n"
+
+            self.lista.insert("end", texto)
 
             total += subtotal
 
@@ -255,10 +502,12 @@ class POSView(ctk.CTkFrame):
 
             producto = item["producto"]
             cantidad = item["cantidad"]
+            extras = item.get("extras", [])
 
             productos.append({
                 "producto_id": producto.id,
-                "cantidad": cantidad
+                "cantidad": cantidad,
+                "extras": extras
             })
 
         pedido = crear_pedido(productos)
