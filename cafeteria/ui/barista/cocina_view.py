@@ -111,7 +111,7 @@ class CocinaView(ctk.CTkFrame):
             top.pack(
                 fill="x",
                 padx=20,
-                pady=(20, 10)
+                pady=(40, 20)
             )
 
             titulo = ctk.CTkLabel(
@@ -173,50 +173,8 @@ class CocinaView(ctk.CTkFrame):
 
                 detalle_label.pack(
                     anchor="w",
-                    padx=40
-                )
-
-            total = ctk.CTkLabel(
-                card,
-                text=f"Total: ${pedido.total}",
-                font=("Montserrat", 18, "bold"),
-                text_color="#C67C3E"
-            )
-
-            total.pack(
-                anchor="w",
-                padx=20,
-                pady=10
-            )
-
-            badge_label = ctk.CTkLabel(
-                badge,
-                text=pedido.estado.upper(),
-                font=("Montserrat", 14, "bold")
-            )
-
-            badge_label.pack(
-                padx=15,
-                pady=5
-            )
-
-            for detalle in pedido.detalles:
-
-                nombre_producto = "Producto eliminado"
-
-                if detalle.producto:
-                    nombre_producto = detalle.producto.nombre
-
-                detalle_label = ctk.CTkLabel(
-                    card,
-                    text=f"• {nombre_producto} x{detalle.cantidad}",
-                    font=("Montserrat", 16)
-                )
-
-                detalle_label.pack(
-                    anchor="w",
-                    padx=35,
-                    pady=2
+                    padx=40,
+                    pady=(8, 2)
                 )
 
             total = ctk.CTkLabel(
@@ -230,6 +188,17 @@ class CocinaView(ctk.CTkFrame):
                 anchor="w",
                 padx=20,
                 pady=15
+            )
+
+            badge_label = ctk.CTkLabel(
+                badge,
+                text=pedido.estado.upper(),
+                font=("Montserrat", 14, "bold")
+            )
+
+            badge_label.pack(
+                padx=15,
+                pady=5
             )
 
             if pedido.estado == "pendiente":
@@ -247,7 +216,7 @@ class CocinaView(ctk.CTkFrame):
                     pady=15
                 )
 
-            elif pedido.estado == "En preparacion":
+            elif pedido.estado == "en_preparacion":
 
                 boton = ctk.CTkButton(
                     card,
