@@ -208,7 +208,7 @@ class CocinaView(ctk.CTkFrame):
                     pady=15
                 )
 
-            elif pedido.estado == "En preparacion":
+            elif pedido.estado == "en_preparacion":
 
                 boton = ctk.CTkButton(
                     card,
@@ -227,7 +227,7 @@ class CocinaView(ctk.CTkFrame):
 
         cambiar_estado_pedido(
             pedido_id,
-            "en_preparacion"
+            "En preparacion"
         )
 
         self.cargar_pedidos()
