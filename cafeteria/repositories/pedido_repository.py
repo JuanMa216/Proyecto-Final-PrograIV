@@ -1,11 +1,36 @@
-# repositories/pedido_repository.py
-# Patron: N/A (Repository)
-#
-# TODO: Clase PedidoRepository
-#   - TODO: Metodo get_all() que retorne todos los pedidos
-#   - TODO: Metodo get_by_id(id) que retorne un pedido por su ID
-#   - TODO: Metodo get_pendientes() que retorne pedidos en estados no finales
-#   - TODO: Metodo get_historial() que retorne pedidos finalizados
-#   - TODO: Metodo create(pedido, items) que inserte pedido y sus items
-#   - TODO: Metodo update_estado(id_pedido, estado) que actualice el estado
-#   - TODO: Metodo get_items(id_pedido) que retorne los items de un pedido
+from database.conexion import get_session
+from models.pedido import Pedido
+
+
+class PedidoRepository:
+
+    @staticmethod
+    def crear(pedido):
+
+        session = get_session()
+
+        session.add(pedido)
+        session.commit()
+        session.refresh(pedido)
+
+        return pedido
+
+    @staticmethod
+    def obtener_todos():
+
+        session = get_session()
+
+        pedidos = session.query(Pedido).all()
+
+        return pedidos
+
+    @staticmethod
+    def obtener_por_id(pedido_id):
+
+        session = get_session()
+
+        pedido = session.query(Pedido).filter_by(
+            id=pedido_id
+        ).first()
+
+        return pedido
