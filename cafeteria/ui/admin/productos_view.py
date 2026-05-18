@@ -189,21 +189,31 @@ class ProductosView(ctk.CTkFrame):
 
         try:
 
-            nombre = self.nombre_entry.get()
-            categoria = self.categoria_entry.get()
+            nombre = self.nombre_entry.get().strip()
+            categoria = self.categoria_entry.get().strip()
 
-            precio = float(
-                self.precio_entry.get()
-            )
+            precio_texto = self.precio_entry.get().strip()
 
             if (
                 not nombre or
-                not categoria
+                not categoria or
+                not precio_texto
             ):
 
                 messagebox.showerror(
                     "Error",
                     "Todos los campos son obligatorios"
+                )
+
+                return
+
+            precio = float(precio_texto)
+
+            if precio <= 0:
+
+                messagebox.showerror(
+                    "Error",
+                    "El precio debe ser mayor a 0"
                 )
 
                 return

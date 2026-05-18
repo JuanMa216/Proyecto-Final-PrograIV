@@ -13,7 +13,8 @@ def cargar_imagen_producto(nombre):
         "Muffin": "assets/muffin.png",
         "Croissant": "assets/croissant.png",
         "Frappe": "assets/frappe.png",
-        "Té verde": "assets/te_verde.png"
+        "Té verde": "assets/te_verde.png",
+        "Mocha": "assets/mocha.png"
     }
 
     ruta = rutas.get(
