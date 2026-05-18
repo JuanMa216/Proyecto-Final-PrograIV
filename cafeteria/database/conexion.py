@@ -17,7 +17,6 @@ def init_db():
     from models.producto import Producto
     from models.pedido import Pedido
     from models.detalle_pedido import DetallePedido
-    from models.venta import Venta
     from models.extra import Extra
 
     Base.metadata.create_all(bind=engine)

@@ -235,7 +235,7 @@ class CocinaView(ctk.CTkFrame):
 
         cambiar_estado_pedido(
             pedido_id,
-            "En preparacion"
+            "en_preparacion"
         )
 
         self.cargar_pedidos()
