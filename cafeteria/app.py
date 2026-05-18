@@ -91,5 +91,3 @@ class App(ctk.CTk):
             fill="both",
             expand=True
         )
-
-        print("Frijolito cacorrito")

@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+from PIL import Image
 
 from services.auth_service import login
 
@@ -20,61 +21,99 @@ class LoginView(ctk.CTkFrame):
         self.show_cajero = show_cajero
         self.show_barista = show_barista
 
-        self.configure(fg_color="#111111")
-
-        self.frame = ctk.CTkFrame(
-            self,
-            width=400,
-            height=400,
-            fg_color="#1b1b1b",
-            corner_radius=20
+        self.configure(
+            fg_color="#0F0F0F"
         )
 
-        self.frame.place(
+        self.logo_image = ctk.CTkImage(
+            light_image=Image.open(
+                "assets/logo.png"
+            ),
+            size=(120, 120)
+        )
+
+        self.card = ctk.CTkFrame(
+            self,
+            width=430,
+            height=560,
+            fg_color="#1A1A1A",
+            corner_radius=30
+        )
+
+        self.card.place(
             relx=0.5,
             rely=0.5,
             anchor="center"
         )
 
-        self.title_label = ctk.CTkLabel(
-            self.frame,
-            text="Bienvenido",
-            font=("Arial", 30, "bold")
+        self.logo = ctk.CTkLabel(
+            self.card,
+            text="",
+            image=self.logo_image
         )
 
-        self.title_label.pack(
-            pady=(40, 10)
+        self.logo.pack(
+            pady=(40, 20)
+        )
+
+        self.title = ctk.CTkLabel(
+            self.card,
+            text="CAFETERÍA",
+            font=("Montserrat", 34, "bold")
+        )
+
+        self.title.pack()
+
+        self.subtitle = ctk.CTkLabel(
+            self.card,
+            text="Sistema inteligente de cafetería",
+            text_color="gray"
+        )
+
+        self.subtitle.pack(
+            pady=(0, 30)
         )
 
         self.username_entry = ctk.CTkEntry(
-            self.frame,
+            self.card,
             placeholder_text="Usuario",
-            width=300,
-            height=45
+            width=320,
+            height=50,
+            corner_radius=15
         )
 
-        self.username_entry.pack(pady=10)
+        self.username_entry.pack(
+            pady=10
+        )
 
         self.password_entry = ctk.CTkEntry(
-            self.frame,
+            self.card,
             placeholder_text="Contraseña",
             show="*",
-            width=300,
-            height=45
+            width=320,
+            height=50,
+            corner_radius=15
         )
 
-        self.password_entry.pack(pady=10)
+        self.password_entry.pack(
+            pady=10
+        )
 
         self.login_button = ctk.CTkButton(
-            self.frame,
+            self.card,
             text="Ingresar",
-            command=self.iniciar_sesion,
-            width=300,
-            height=45,
-            fg_color="#C67C3E"
+            width=320,
+            height=50,
+            fg_color="#C67C3E",
+            hover_color="#A8642D",
+            corner_radius=15,
+            font=("Montserrat", 18, "bold"),
+            command=self.iniciar_sesion
         )
 
-        self.login_button.pack(pady=30)
+        self.login_button.pack(
+            pady=30
+        )
 
     def iniciar_sesion(self):
 

@@ -4,6 +4,10 @@ from tkinter import messagebox
 from services.producto_service import obtener_productos
 from services.pedido_service import crear_pedido
 
+from utils.image_loader import (
+    cargar_imagen_producto
+)
+
 
 class POSView(ctk.CTkFrame):
 
@@ -22,13 +26,13 @@ class POSView(ctk.CTkFrame):
         self.carrito = {}
 
         self.configure(
-            fg_color="#111111"
+            fg_color="#0F0F0F"
         )
 
         self.sidebar = ctk.CTkFrame(
             self,
-            width=320,
-            fg_color="#1b1b1b"
+            width=340,
+            fg_color="#141414"
         )
 
         self.sidebar.pack(
@@ -38,7 +42,7 @@ class POSView(ctk.CTkFrame):
 
         self.content = ctk.CTkScrollableFrame(
             self,
-            fg_color="#111111"
+            fg_color="#0F0F0F"
         )
 
         self.content.pack(
@@ -52,6 +56,8 @@ class POSView(ctk.CTkFrame):
             text="Cerrar Sesión",
             fg_color="red",
             hover_color="#aa0000",
+            height=50,
+            corner_radius=15,
             command=self.logout_callback
         )
 
@@ -64,17 +70,17 @@ class POSView(ctk.CTkFrame):
 
         self.title = ctk.CTkLabel(
             self.sidebar,
-            text="Pedido",
-            font=("Arial", 30, "bold")
+            text="🧾 Pedido",
+            font=("Montserrat", 30, "bold")
         )
 
         self.title.pack(pady=30)
 
         self.lista = ctk.CTkTextbox(
             self.sidebar,
-            width=260,
+            width=280,
             height=450,
-            font=("Arial", 16)
+            font=("Montserrat", 16)
         )
 
         self.lista.pack(padx=20)
@@ -82,7 +88,7 @@ class POSView(ctk.CTkFrame):
         self.total_label = ctk.CTkLabel(
             self.sidebar,
             text="Total: $0",
-            font=("Arial", 28, "bold"),
+            font=("Montserrat", 28, "bold"),
             text_color="#C67C3E"
         )
 
@@ -92,9 +98,11 @@ class POSView(ctk.CTkFrame):
             self.sidebar,
             text="Confirmar Pedido",
             command=self.confirmar_pedido,
-            height=50,
+            height=55,
             fg_color="#C67C3E",
-            hover_color="#A8642D"
+            hover_color="#A8642D",
+            corner_radius=15,
+            font=("Montserrat", 18, "bold")
         )
 
         self.confirmar_btn.pack(
@@ -117,8 +125,8 @@ class POSView(ctk.CTkFrame):
             card = ctk.CTkFrame(
                 self.content,
                 width=320,
-                height=240,
-                fg_color="#1b1b1b",
+                height=280,
+                fg_color="#1A1A1A",
                 corner_radius=25
             )
 
@@ -131,34 +139,48 @@ class POSView(ctk.CTkFrame):
 
             card.grid_propagate(False)
 
+            imagen = cargar_imagen_producto(
+                producto.nombre
+            )
+
+            img_label = ctk.CTkLabel(
+                card,
+                text="",
+                image=imagen
+            )
+
+            img_label.pack(
+                pady=(25, 10)
+            )
+
             nombre = ctk.CTkLabel(
                 card,
                 text=producto.nombre,
-                font=("Arial", 28, "bold")
+                font=("Montserrat", 26, "bold")
             )
 
-            nombre.pack(
-                pady=(45, 15)
-            )
+            nombre.pack()
 
             categoria = ctk.CTkLabel(
                 card,
                 text=producto.categoria,
                 text_color="gray",
-                font=("Arial", 16)
+                font=("Montserrat", 15)
             )
 
-            categoria.pack()
+            categoria.pack(
+                pady=5
+            )
 
             precio = ctk.CTkLabel(
                 card,
                 text=f"${producto.precio}",
                 text_color="#C67C3E",
-                font=("Arial", 26, "bold")
+                font=("Montserrat", 24, "bold")
             )
 
             precio.pack(
-                pady=15
+                pady=10
             )
 
             boton = ctk.CTkButton(
@@ -167,6 +189,8 @@ class POSView(ctk.CTkFrame):
                 height=45,
                 fg_color="#C67C3E",
                 hover_color="#A8642D",
+                corner_radius=15,
+                font=("Montserrat", 16, "bold"),
                 command=lambda p=producto: self.agregar_producto(p)
             )
 
@@ -223,7 +247,6 @@ class POSView(ctk.CTkFrame):
     def confirmar_pedido(self):
 
         if not self.carrito:
-
             return
 
         productos = []
