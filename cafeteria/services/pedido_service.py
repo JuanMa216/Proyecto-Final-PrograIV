@@ -6,6 +6,19 @@ from models.pedido import Pedido
 from models.detalle_pedido import DetallePedido
 from models.producto import Producto
 
+from patterns.decorator.extras import ProductoBase, ExtraDecorator
+
+
+def calcular_precio_con_extras(producto, extras):
+
+    base = ProductoBase(producto)
+
+    for extra_data in extras:
+
+        base = ExtraDecorator(base, extra_data["nombre"], extra_data["precio"])
+
+    return base.costo()
+
 
 def crear_pedido(productos):
 
@@ -28,14 +41,19 @@ def crear_pedido(productos):
 
         if producto:
 
-            subtotal = producto.precio * item["cantidad"]
+            extras = item.get("extras", [])
+
+            precio_unitario = calcular_precio_con_extras(producto, extras)
+
+            subtotal = precio_unitario * item["cantidad"]
 
             total += subtotal
 
             detalle = DetallePedido(
                 pedido_id=pedido.id,
                 producto_id=producto.id,
-                cantidad=item["cantidad"]
+                cantidad=item["cantidad"],
+                extras=extras
             )
 
             session.add(detalle)

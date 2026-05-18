@@ -2,6 +2,7 @@ from database.conexion import get_session
 
 from models.usuario import Usuario
 from models.producto import Producto
+from models.extra import Extra
 
 from services.auth_service import hash_password
 
@@ -91,5 +92,23 @@ def seed_data():
         ]
 
         session.add_all(productos)
+
+    extras_existentes = session.query(Extra).all()
+
+    if not extras_existentes:
+
+        extras = [
+
+            Extra(nombre="Azúcar", precio=500),
+            Extra(nombre="Chantilly", precio=1000),
+            Extra(nombre="Leche deslactosada", precio=800),
+            Extra(nombre="Chocolate extra", precio=1200),
+            Extra(nombre="Shot espresso extra", precio=1500),
+            Extra(nombre="Canela", precio=300),
+            Extra(nombre="Jarabe de vainilla", precio=700),
+            Extra(nombre="Crema batida", precio=900),
+        ]
+
+        session.add_all(extras)
 
     session.commit()

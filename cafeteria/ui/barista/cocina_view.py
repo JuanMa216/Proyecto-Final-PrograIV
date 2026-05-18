@@ -146,6 +146,45 @@ class CocinaView(ctk.CTkFrame):
 
             badge.pack(
                 anchor="w",
+                padx=20
+            )
+
+            for detalle in pedido.detalles:
+
+                nombre_producto = "Producto eliminado"
+
+                if detalle.producto:
+                    nombre_producto = detalle.producto.nombre
+
+                texto = f"• {nombre_producto} x{detalle.cantidad}"
+
+                if hasattr(detalle, 'extras') and detalle.extras:
+
+                    for extra in detalle.extras:
+
+                        texto += f"\n    +{extra['nombre']}"
+
+                detalle_label = ctk.CTkLabel(
+                    card,
+                    text=texto,
+                    justify="left",
+                    font=("Montserrat", 16)
+                )
+
+                detalle_label.pack(
+                    anchor="w",
+                    padx=40
+                )
+
+            total = ctk.CTkLabel(
+                card,
+                text=f"Total: ${pedido.total}",
+                font=("Montserrat", 18, "bold"),
+                text_color="#C67C3E"
+            )
+
+            total.pack(
+                anchor="w",
                 padx=20,
                 pady=10
             )
